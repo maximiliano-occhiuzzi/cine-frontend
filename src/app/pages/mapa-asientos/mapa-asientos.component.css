@@ -1,0 +1,47 @@
+.mapa-container { max-width: 950px; margin: 0 auto; text-align: center; padding-bottom: 90px; }
+.mapa-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; text-align: left; }
+.btn-back { background: #222; border: 1px solid #444; color: #ccc; padding: 10px 18px; border-radius: 6px; cursor: pointer; font-weight: bold; transition: all 0.2s; }
+.btn-back:hover { background: #e50914; color: white; border-color: #e50914; }
+.info-funcion h2 { margin: 0; font-size: 22px; color: #fff; }
+.info-funcion p { margin: 4px 0 0 0; font-size: 12px; color: #e50914; font-weight: bold; }
+
+.screen-wrapper { perspective: 400px; margin: 30px 0 40px 0; position: relative; }
+.screen { background: linear-gradient(180deg, #ffffff 0%, #aaaaaa 100%); height: 20px; width: 80%; margin: 0 auto; border-radius: 50% 50% 0 0 / 20px 20px 0 0; box-shadow: 0 8px 30px rgba(255, 255, 255, 0.4); color: #000; font-size: 11px; font-weight: 900; line-height: 20px; letter-spacing: 4px; }
+.screen-glow { height: 40px; width: 75%; margin: 0 auto; background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.15) 0%, transparent 70%); }
+
+.seats-grid { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.seat-row { display: flex; align-items: center; gap: 14px; }
+.row-label { width: 22px; font-weight: bold; color: #888; font-size: 14px; }
+.seats-group { display: flex; gap: 8px; }
+
+.seat-btn { width: 34px; height: 34px; border-radius: 8px 8px 3px 3px; border: none; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.15s; }
+.seat-btn:hover:not(:disabled) { transform: scale(1.2); box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3); }
+
+.seat-btn.disponible { background-color: #ffffff; color: #000; }
+.seat-btn.ocupado { background-color: #b71c1c; color: #ffffff; cursor: not-allowed; opacity: 0.8; }
+.seat-btn.seleccionado { background-color: #2e7d32; color: #ffffff; box-shadow: 0 0 10px #4caf50; }
+
+.legend { display: flex; justify-content: center; gap: 30px; margin-top: 45px; font-size: 14px; color: #aaa; }
+.seat-sample { display: inline-block; width: 16px; height: 16px; border-radius: 4px; vertical-align: middle; margin-right: 8px; }
+.seat-sample.disponible { background: #fff; }
+.seat-sample.ocupado { background: #b71c1c; }
+.seat-sample.seleccionado { background: #2e7d32; }
+
+.checkout-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1a1a1a; border: 1px solid #e50914; padding: 15px 35px; border-radius: 40px; display: flex; align-items: center; gap: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.95); z-index: 100; }
+.checkout-info { display: flex; gap: 30px; text-align: left; }
+.label { display: block; font-size: 11px; color: #888; text-transform: uppercase; }
+.values { font-size: 16px; color: #fff; }
+.total-price { font-size: 20px; color: #4caf50; font-weight: 900; }
+.btn-confirm { background: #e50914; color: white; border: none; padding: 12px 28px; border-radius: 25px; font-weight: 900; cursor: pointer; font-size: 15px; transition: transform 0.2s; }
+.btn-confirm:hover { transform: scale(1.05); background: #f40612; }
+
+.modal-backdrop { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(5px); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.modal-card { background: #1a1a1a; padding: 35px; border-radius: 16px; width: 400px; text-align: center; border: 1px solid #333; box-shadow: 0 20px 50px rgba(0,0,0,0.9); }
+.modal-icon { font-size: 40px; margin-bottom: 15px; }
+.modal-card h3 { margin: 0 0 10px 0; font-size: 20px; color: #fff; }
+.modal-text { color: #aaa; font-size: 14px; line-height: 1.5; margin-bottom: 25px; }
+.modal-actions { display: flex; flex-direction: column; gap: 12px; }
+.btn-primary { background: #e50914; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+.btn-secondary { background: #333; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+.btn-cancel { background: none; border: none; color: #777; cursor: pointer; font-size: 13px; margin-top: 5px; }
+.btn-cancel:hover { color: #fff; }

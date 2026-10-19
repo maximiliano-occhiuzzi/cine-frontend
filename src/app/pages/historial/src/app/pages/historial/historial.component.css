@@ -1,0 +1,32 @@
+.historial-container { max-width: 600px; margin: 0 auto; }
+h2 { color: #fff; }
+.aviso-vuelta { background: #1b5e20; color: #c8e6c9; border-radius: 8px; padding: 12px 16px; margin-bottom: 16px; font-size: 13.5px; }
+.aviso-vuelta.pendiente { background: #5d4037; color: #ffcc80; }
+.aviso-vuelta.fallido { background: #4a1414; color: #ef9a9a; }
+.error { color: #ff6b6b; }
+.compra-card { background: #1a1a1a; border: 1px solid #333; border-radius: 12px; padding: 20px; margin-bottom: 16px; color: #ccc; }
+.compra-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.estado { font-size: 11px; font-weight: 900; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+.estado.pagada { background: #1b5e20; color: #a5d6a7; }
+.estado.pendiente { background: #5d4037; color: #ffcc80; }
+.estado.cancelada { background: #4a1414; color: #ef9a9a; }
+.detalle-confiteria { margin: 8px 0; padding: 8px 12px; background: #141414; border-radius: 8px; }
+.subtitulo { font-size: 12px; color: #888; margin: 0 0 4px 0; text-transform: uppercase; }
+.item-confiteria { font-size: 13px; margin: 2px 0; color: #ddd; }
+.desglose { font-size: 12px; color: #888; margin: 4px 0; }
+.total { color: #4caf50; font-weight: bold; }
+.aviso-pago { font-size: 12px; color: #ffcc80; background: #3a2a10; padding: 8px; border-radius: 6px; margin-top: 8px; }
+.aviso-pago p { margin: 0 0 8px 0; }
+/* Esperando confirmación de webhook: no es un error, es un estado de
+   tránsito normal -color neutro en vez del amarillo de advertencia. */
+.aviso-pago.esperando { color: #90caf9; background: #10243a; }
+.aviso-pago.esperando p { margin: 0; }
+.btn-reintentar { background: #0088cc; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
+.btn-reintentar:disabled { background: #555; cursor: not-allowed; }
+.error-reintento { color: #ff8a80; font-size: 11.5px; margin: 8px 0 0 0; }
+.link-pago { display: inline-block; margin-top: 8px; color: #fff; background: #0088cc; padding: 8px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: bold; }
+.btn-secondary { display: inline-block; margin-top: 10px; color: #ccc; text-decoration: none; border: 1px solid #444; padding: 10px 18px; border-radius: 6px; }
+.acciones-compra { margin-top: 10px; }
+.btn-link.danger { background: transparent; color: #ef9a9a; border: 1px solid #5c2b2b; padding: 7px 14px; border-radius: 6px; font-size: 12.5px; font-weight: bold; cursor: pointer; }
+.btn-link.danger:hover:not(:disabled) { background: #3a1616; }
+.btn-link.danger:disabled { color: #777; border-color: #444; cursor: not-allowed; }

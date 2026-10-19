@@ -1,0 +1,94 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Administrar Usuarios</h2>
+    <button class="btn-primary" (click)="nuevoUsuario()">+ Nuevo usuario</button>
+  </div>
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="filtros">
+    <input type="text" placeholder="Buscar por username, nombre o email..." [(ngModel)]="textoFiltro" name="textoFiltro" />
+    <select [(ngModel)]="rolFiltro" name="rolFiltro">
+      <option value="">Todos los roles</option>
+      <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+    </select>
+  </div>
+
+  <p *ngIf="cargando">Cargando...</p>
+
+  <div class="modal-backdrop" *ngIf="mostrarForm">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ editandoUsername ? 'Editar usuario' : 'Nuevo usuario' }}</h3>
+        <button class="btn-close" (click)="cancelar()">✕</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field" *ngIf="!editandoUsername">
+          <label>Username</label>
+          <input type="text" [(ngModel)]="form.username" name="username" autocomplete="off" />
+        </div>
+        <div class="field" *ngIf="!editandoUsername">
+          <label>Contraseña</label>
+          <input type="password" [(ngModel)]="form.password" name="password" autocomplete="new-password" />
+        </div>
+        <div class="field">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="form.nombre" name="nombre" />
+        </div>
+        <div class="field">
+          <label>Apellido</label>
+          <input type="text" [(ngModel)]="form.apellido" name="apellido" />
+        </div>
+        <div class="field full">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="form.email" name="email" />
+        </div>
+        <div class="field">
+          <label>Rol</label>
+          <select [(ngModel)]="form.rol" name="rol">
+            <option *ngFor="let r of roles" [value]="r">{{ r }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelar()">Cancelar</button>
+        <button class="btn-primary" (click)="guardar()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="admin-table" *ngIf="!cargando && usuariosFiltrados.length > 0">
+    <thead>
+      <tr>
+        <th>Username</th>
+        <th>Nombre</th>
+        <th>Email</th>
+        <th>Rol</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let u of usuariosFiltrados" [class.inactivo]="!u.habilitado">
+        <td>{{ u.username }}</td>
+        <td>{{ u.nombre }} {{ u.apellido }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.rol }}</td>
+        <td>
+          <span class="badge" [class.activo]="u.habilitado">{{ u.habilitado ? 'Habilitado' : 'Deshabilitado' }}</span>
+        </td>
+        <td class="acciones">
+          <button class="btn-link" (click)="verCompras(u)">Ver compras</button>
+          <button class="btn-link" (click)="editar(u)">Editar</button>
+          <button class="btn-link danger" *ngIf="u.habilitado" (click)="darDeBaja(u)">Deshabilitar</button>
+          <button class="btn-link" *ngIf="!u.habilitado" (click)="reactivar(u)">Reactivar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!cargando && usuariosFiltrados.length === 0">No hay usuarios que coincidan con el filtro.</p>
+</div>

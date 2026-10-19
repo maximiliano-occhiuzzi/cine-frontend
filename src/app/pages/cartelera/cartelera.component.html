@@ -1,0 +1,68 @@
+<div class="cartelera-container">
+  <div class="movies-carousel-header">
+    <h2>PELÍCULAS EN CARTELERA</h2>
+  </div>
+
+  <div class="movies-thumbnails">
+    <div 
+      *ngFor="let p of peliculas" 
+      class="movie-thumb"
+      [class.active]="p.id === peliculaSeleccionada?.id"
+      (click)="seleccionarPelicula(p)">
+      <img [src]="p.poster" [alt]="p.titulo" class="thumb-img" />
+      <div class="thumb-title">{{ p.titulo }}</div>
+    </div>
+  </div>
+
+  <div class="movie-detail-section" *ngIf="peliculaSeleccionada">
+    <div class="poster-card">
+      <img [src]="peliculaSeleccionada.poster" [alt]="peliculaSeleccionada.titulo" class="poster-image" />
+      <div class="badges">
+        <span class="badge-age">{{ peliculaSeleccionada.clasificacionEdad }}</span>
+        <span class="badge-time">{{ peliculaSeleccionada.duracion }} min</span>
+        <span class="badge-rating">★ {{ peliculaSeleccionada.calificacion }}</span>
+      </div>
+    </div>
+
+    <div class="schedule-card">
+      <div class="movie-header-info">
+        <h1>{{ peliculaSeleccionada.titulo }}</h1>
+        <p class="genre">{{ peliculaSeleccionada.genero }} | {{ peliculaSeleccionada.formatoDisponible }}</p>
+        <p class="synopsis">{{ peliculaSeleccionada.sinopsis }}</p>
+        <p class="credits"><strong>Director:</strong> {{ peliculaSeleccionada.director }} | <strong>Elenco:</strong> {{ peliculaSeleccionada.reparto }}</p>
+        <p class="credits" *ngIf="peliculaSeleccionada.fechaEstreno"><strong>Estreno:</strong> {{ peliculaSeleccionada.fechaEstreno | date:'dd/MM/yyyy' }}</p>
+      </div>
+
+      <hr class="divider" />
+
+      <div class="date-section">
+        <h3>HORARIOS Y FUNCIONES</h3>
+      </div>
+
+      <div class="availability-legend">
+        <span><i class="dot alta"></i> Alta Disponibilidad</span>
+        <span><i class="dot media"></i> Media Disponibilidad</span>
+        <span><i class="dot baja"></i> Casi Llena</span>
+      </div>
+
+      <div class="functions-grid-container">
+        <div class="day-group" *ngFor="let grupo of gruposDeFunciones">
+          <h4 class="day-group-title">{{ grupo.etiqueta }}</h4>
+          <div class="time-grid">
+            <button
+              *ngFor="let f of grupo.funciones"
+              class="time-btn"
+              (click)="irAMapa(f)">
+              <span class="time">{{ f.fechaHora | date:'HH:mm' }}</span>
+              <span class="sala-type">{{ f.nombreSala }}</span>
+              <span class="price">${{ f.precioBase }}</span>
+            </button>
+          </div>
+        </div>
+        <p class="sin-funciones" *ngIf="gruposDeFunciones.length === 0">
+          No hay funciones programadas para esta película todavía.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

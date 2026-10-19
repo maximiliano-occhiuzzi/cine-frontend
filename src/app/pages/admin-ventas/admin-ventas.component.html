@@ -1,0 +1,62 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Estado General de Ventas</h2>
+  </div>
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+
+  <div class="filtros">
+    <input type="text" placeholder="Filtrar por username del comprador..." [(ngModel)]="filtroUsuario" name="filtroUsuario" />
+    <select [(ngModel)]="filtroEstado" name="filtroEstado">
+      <option value="">Todos los estados</option>
+      <option *ngFor="let e of estados" [value]="e">{{ e }}</option>
+    </select>
+  </div>
+
+  <div class="resumen" *ngIf="!cargando">
+    <span>{{ ventasFiltradas.length }} compra(s)</span>
+  </div>
+
+  <p *ngIf="cargando">Cargando...</p>
+
+  <table class="admin-table" *ngIf="!cargando && ventasFiltradas.length > 0">
+    <thead>
+      <tr>
+        <th>N°</th>
+        <th>Usuario</th>
+        <th>Película</th>
+        <th>Butacas</th>
+        <th>Fecha</th>
+        <th>Total</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let v of ventasFiltradas">
+        <td>V-{{ v.id }}</td>
+        <td>{{ v.username }}</td>
+        <td>{{ v.peliculaTitulo || '—' }}</td>
+        <td>{{ listaButacas(v) }}</td>
+        <td>{{ v.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>${{ v.total }}</td>
+        <td>
+          <span class="badge"
+                [class.pagada]="v.estado === 'PAGADA'"
+                [class.pendiente]="v.estado === 'PENDIENTE'"
+                [class.cancelada]="v.estado === 'CANCELADA'">
+            {{ v.estado }}
+          </span>
+        </td>
+        <td class="acciones">
+          <button class="btn-link danger" *ngIf="puedeCancelar(v)" [disabled]="cancelando[v.id]" (click)="cancelarVenta(v)">
+            {{ cancelando[v.id] ? 'Cancelando...' : 'Cancelar' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="!cargando && ventasFiltradas.length === 0">No hay compras que coincidan con el filtro.</p>
+</div>

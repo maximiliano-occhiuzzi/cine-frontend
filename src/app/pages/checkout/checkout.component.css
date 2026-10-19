@@ -1,0 +1,13 @@
+.checkout-container { max-width: 500px; margin: 40px auto; }
+h2 { color: #fff; text-align: center; }
+.resumen-card { background: #1a1a1a; border: 1px solid #333; border-radius: 16px; padding: 30px; }
+.comprador { color: #4caf50; font-size: 14px; margin-bottom: 18px; }
+.linea { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #262626; color: #ccc; font-size: 14px; }
+.linea.total { border-bottom: none; margin-top: 10px; font-size: 20px; font-weight: 900; color: #4caf50; }
+.error { color: #ff6b6b; font-size: 13px; margin: 16px 0 0 0; }
+.btn-primary { display: block; width: 100%; text-align: center; background: #e50914; color: #fff; border: none; padding: 14px; border-radius: 25px; font-weight: 900; cursor: pointer; font-size: 15px; margin-top: 20px; text-decoration: none; box-sizing: border-box; }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+.resumen-card.confirmada { text-align: center; }
+.icon-ok { font-size: 48px; }
+.numero-compra { color: #e50914; font-weight: bold; }
+.nota { color: #888; font-size: 13px; }

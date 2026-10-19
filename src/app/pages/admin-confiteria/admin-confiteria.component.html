@@ -1,0 +1,94 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Administrar Confitería</h2>
+    <div class="admin-header-acciones">
+      <button class="btn-secondary" (click)="cargar()" [disabled]="cargando">↻ Actualizar</button>
+      <button class="btn-primary" (click)="nuevoProducto()">+ Nuevo producto</button>
+    </div>
+  </div>
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p *ngIf="cargando">Cargando...</p>
+
+  <div class="modal-backdrop" *ngIf="mostrarForm">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ editandoId ? 'Editar producto' : 'Nuevo producto' }}</h3>
+        <button class="btn-close" (click)="cancelar()">✕</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="form.nombre" name="nombre" />
+        </div>
+        <div class="field full">
+          <label>Descripción</label>
+          <textarea [(ngModel)]="form.descripcion" name="descripcion" rows="2"></textarea>
+        </div>
+        <div class="field">
+          <label>Precio</label>
+          <input type="number" min="0" step="0.01" [(ngModel)]="form.precio" name="precio" />
+        </div>
+        <div class="field">
+          <label>Stock</label>
+          <input type="number" min="0" [(ngModel)]="form.stock" name="stock" />
+        </div>
+        <div class="field">
+          <label>Categoría</label>
+          <select [(ngModel)]="form.categoria" name="categoria">
+            <option *ngFor="let c of categorias" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>URL de la imagen (opcional)</label>
+          <input type="text" [(ngModel)]="form.imagenUrl" name="imagenUrl" placeholder="https://... (si se deja vacío, se muestra un ícono)" />
+        </div>
+      </div>
+
+      <div class="preview" *ngIf="form.imagenUrl">
+        <img [src]="form.imagenUrl" alt="Vista previa" />
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelar()">Cancelar</button>
+        <button class="btn-primary" (click)="guardar()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="admin-table" *ngIf="!cargando && productos.length > 0">
+    <thead>
+      <tr>
+        <th>Imagen</th>
+        <th>Nombre</th>
+        <th>Categoría</th>
+        <th>Precio</th>
+        <th>Stock</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let p of productos" [class.inactivo]="p.activo === false">
+        <td>
+          <img *ngIf="p.imagen && p.imagen.startsWith('http')" [src]="p.imagen" [alt]="p.nombre" class="thumb" />
+          <span *ngIf="!p.imagen || !p.imagen.startsWith('http')" class="emoji">{{ p.imagen || '🍿' }}</span>
+        </td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.tipo }}</td>
+        <td>${{ p.precio }}</td>
+        <td>{{ p.stock }}</td>
+        <td>
+          <span class="badge" [class.activo]="p.activo !== false">{{ p.activo === false ? 'Dado de baja' : 'Activo' }}</span>
+        </td>
+        <td class="acciones">
+          <button class="btn-link" (click)="editar(p)">Editar</button>
+          <button class="btn-link danger" *ngIf="p.activo !== false" (click)="darDeBaja(p)">Dar de baja</button>
+          <button class="btn-link" *ngIf="p.activo === false" (click)="reactivar(p)">Reactivar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

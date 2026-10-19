@@ -1,0 +1,72 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Administrar Salas</h2>
+    <button class="btn-primary" (click)="nuevaSala()">+ Nueva sala</button>
+  </div>
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p *ngIf="cargando">Cargando...</p>
+
+  <div class="modal-backdrop" *ngIf="mostrarForm">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ editandoId ? 'Editar sala' : 'Nueva sala' }}</h3>
+        <button class="btn-close" (click)="cancelar()">✕</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="form.nombre" name="nombre" placeholder="Sala 1 - IMAX" />
+        </div>
+        <div class="field full">
+          <label>Tipo</label>
+          <select [(ngModel)]="form.tipo" name="tipo">
+            <option *ngFor="let t of tipos" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+        <ng-container *ngIf="!editandoId">
+          <div class="field">
+            <label>Filas</label>
+            <input type="number" min="1" max="26" [(ngModel)]="form.filas" name="filas" />
+          </div>
+          <div class="field">
+            <label>Asientos por fila</label>
+            <input type="number" min="1" [(ngModel)]="form.asientosPorFila" name="asientosPorFila" />
+          </div>
+        </ng-container>
+        <p class="hint full" *ngIf="editandoId">
+          No se puede cambiar la cantidad de filas/asientos de una sala ya creada (rompería las butacas ya vendidas).
+        </p>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelar()">Cancelar</button>
+        <button class="btn-primary" (click)="guardar()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="admin-table" *ngIf="!cargando && salas.length > 0">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Tipo</th>
+        <th>Capacidad</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let s of salas">
+        <td>{{ s.nombre }}</td>
+        <td>{{ s.tipo }}</td>
+        <td>{{ s.capacidad }} butacas</td>
+        <td class="acciones">
+          <button class="btn-link" (click)="editar(s)">Editar</button>
+          <button class="btn-link danger" (click)="eliminar(s)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -1,0 +1,55 @@
+<div class="historial-container">
+  <h2>Mis compras</h2>
+
+  <div class="aviso-vuelta" *ngIf="avisoPago === 'exitoso'">
+    ✅ ¡Pago acreditado! En unos segundos vas a ver la butaca ocupada y la compra confirmada acá abajo.
+  </div>
+  <div class="aviso-vuelta pendiente" *ngIf="avisoPago === 'pendiente'">
+    ⏳ Tu pago quedó pendiente de confirmación. Te avisamos por mail apenas se acredite.
+  </div>
+  <div class="aviso-vuelta fallido" *ngIf="avisoPago === 'fallido'">
+    ❌ El pago no se pudo completar. Podés volver a intentarlo desde la compra que quedó en PENDIENTE.
+  </div>
+
+  <p *ngIf="cargando">Cargando...</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p *ngIf="!cargando && !error && compras.length === 0">Todavía no hiciste ninguna compra.</p>
+
+  <div class="compra-card" *ngFor="let venta of compras">
+    <div class="compra-header">
+      <strong>Compra N° V-{{ venta.id }}</strong>
+      <span class="estado" [ngClass]="venta.estado.toLowerCase()">{{ venta.estado }}</span>
+    </div>
+    <p *ngIf="venta.peliculaTitulo">{{ venta.peliculaTitulo }}</p>
+    <p>Butacas: {{ listaButacas(venta) }}</p>
+    <p>Fecha: {{ venta.fecha | date:'dd/MM/yyyy HH:mm' }}</p>
+
+    <div class="detalle-confiteria" *ngIf="venta.productos && venta.productos.length > 0">
+      <p class="subtitulo">Confitería:</p>
+      <p class="item-confiteria" *ngFor="let p of venta.productos">
+        {{ nombreProducto(p.productoId) }} x{{ p.cantidad }} — ${{ p.subtotal }}
+      </p>
+    </div>
+
+    <p class="desglose">Entradas: ${{ totalEntradas(venta) }}<span *ngIf="venta.productos?.length"> + Confitería: ${{ totalConfiteria(venta) }}</span></p>
+    <p class="total">Total: ${{ venta.total }}</p>
+
+    <div class="aviso-pago" *ngIf="sinLinkDePago(venta)">
+      <p>⚠️ No se generó un link de pago real para esta compra (Mercado Pago no respondió). La reserva quedó creada en estado PENDIENTE.</p>
+      <button class="btn-reintentar" [disabled]="reintentando[venta.id]" (click)="reintentarPago(venta)">
+        {{ reintentando[venta.id] ? 'Generando link...' : 'Reintentar pago' }}
+      </button>
+      <p class="error-reintento" *ngIf="errorReintento[venta.id]">{{ errorReintento[venta.id] }}</p>
+    </div>
+    <!-- Ya hay un link de pago generado para esta compra: o todavia no se
+         pagó, o ya se pagó y estamos esperando que Mercado Pago confirme
+         por webhook (puede tardar unos segundos) -la pantalla se
+         actualiza sola, no hace falta hacer nada. -->
+    <div class="aviso-pago esperando" *ngIf="esperandoConfirmacion(venta)">
+      <p>⏳ Esperando la confirmación del pago. Si ya pagaste, en unos segundos se actualiza solo.</p>
+    </div>
+    <a *ngIf="venta.estado === 'PENDIENTE' && venta.initPoint" [href]="venta.initPoint" target="_blank" class="link-pago">Completar pago en Mercado Pago</a>
+  </div>
+
+  <a routerLink="/cartelera" class="btn-secondary">← Volver a cartelera</a>
+</div>

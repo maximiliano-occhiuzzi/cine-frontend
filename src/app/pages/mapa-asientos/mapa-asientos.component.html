@@ -1,0 +1,70 @@
+<div class="mapa-container">
+  <div class="mapa-header">
+    <button class="btn-back" routerLink="/cartelera">← Volver a cartelera</button>
+    <div class="info-funcion">
+      <h2>{{ tituloPelicula }}</h2>
+      <p>SALA {{ salaId }} • PANTALLA IMAX • LUGAR LIBRE A ELECCIÓN</p>
+    </div>
+  </div>
+
+  <div class="screen-wrapper">
+    <div class="screen">PANTALLA DE CINE</div>
+    <div class="screen-glow"></div>
+  </div>
+
+  <div class="seats-grid">
+    <div *ngFor="let fila of filasUnicas" class="seat-row">
+      <span class="row-label">{{ fila }}</span>
+      <div class="seats-group">
+        <button 
+          *ngFor="let b of asientosPorFilaMap[fila]"
+          class="seat-btn"
+          [ngClass]="{
+            'ocupado': b.estado === 'OCUPADO',
+            'seleccionado': b.seleccionada,
+            'disponible': b.estado === 'DISPONIBLE' && !b.seleccionada
+          }"
+          [disabled]="b.estado === 'OCUPADO'"
+          (click)="toggleAsiento(b)">
+          {{ b.numero }}
+        </button>
+      </div>
+      <span class="row-label">{{ fila }}</span>
+    </div>
+  </div>
+
+  <div class="legend">
+    <span><i class="seat-sample disponible"></i> Disponible</span>
+    <span><i class="seat-sample ocupado"></i> Ocupado</span>
+    <span><i class="seat-sample seleccionado"></i> Tu Selección</span>
+  </div>
+
+  <div class="checkout-bar" *ngIf="butacasSeleccionadas.length > 0">
+    <div class="checkout-info">
+      <div>
+        <span class="label">Asientos:</span>
+        <strong class="values">{{ listaAsientosTexto }}</strong>
+      </div>
+      <div>
+        <span class="label">Total entradas:</span>
+        <strong class="total-price">${{ totalPagar }}</strong>
+      </div>
+    </div>
+    <button class="btn-confirm" (click)="continuarCompra()">Confirmar Asientos</button>
+  </div>
+
+  <div class="modal-backdrop" *ngIf="mostrarModalAuth">
+    <div class="modal-card">
+      <div class="modal-icon">🔒</div>
+      <h3>¡Iniciá sesión para reservar!</h3>
+      <p class="modal-text">
+        Como <strong>Visitante</strong> podés explorar la cartelera y ver los asientos libres en tiempo real, pero para confirmar tus lugares necesitás ingresar con tu cuenta de usuario.
+      </p>
+      <div class="modal-actions">
+        <button class="btn-primary" [routerLink]="['/login']" [queryParams]="{ returnUrl: '/candy' }">Ingresar con mi Cuenta</button>
+        <button class="btn-secondary" [routerLink]="['/registro']" [queryParams]="{ returnUrl: '/candy' }">Registrarme Gratis</button>
+        <button class="btn-cancel" (click)="mostrarModalAuth = false">Seguir viendo asientos</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,69 @@
+<div class="candy-container">
+  <div class="candy-header">
+    <h1>CANDY & CONFITERÍA</h1>
+    <p>Acompañá tu película con los mejores snacks y promos exclusivas del cine.</p>
+  </div>
+
+  <div class="filter-bar">
+    <button [class.active]="categoriaSeleccionada === 'TODOS'" (click)="categoriaSeleccionada = 'TODOS'">Todos</button>
+    <button [class.active]="categoriaSeleccionada === 'COMBO'" (click)="categoriaSeleccionada = 'COMBO'">Combos</button>
+    <button [class.active]="categoriaSeleccionada === 'COMIDA'" (click)="categoriaSeleccionada = 'COMIDA'">Pochoclos & Comida</button>
+    <button [class.active]="categoriaSeleccionada === 'BEBIDA'" (click)="categoriaSeleccionada = 'BEBIDA'">Bebidas</button>
+    <button [class.active]="categoriaSeleccionada === 'MERCHANDISING'" (click)="categoriaSeleccionada = 'MERCHANDISING'">Coleccionables</button>
+  </div>
+
+  <div class="candy-grid">
+    <div class="candy-card" *ngFor="let p of productosFiltrados">
+      <img *ngIf="p.imagen && p.imagen.startsWith('http')" [src]="p.imagen" [alt]="p.nombre" class="candy-img" />
+      <div class="candy-icon" *ngIf="!p.imagen || !p.imagen.startsWith('http')">{{ p.imagen || '🍿' }}</div>
+      <div class="candy-info">
+        <h3>{{ p.nombre }}</h3>
+        <p class="desc">{{ p.descripcion }}</p>
+        <p class="stock-info" *ngIf="p.stock != null">{{ p.stock }} disponibles</p>
+
+        <!-- Fuera del flujo de compra (se entró desde el navbar, sin
+             función elegida) esto es solo catálogo: nada se puede agregar
+             acá — recién se puede sumar confitería una vez que se eligió
+             función y butacas, como paso de ese flujo. -->
+        <div class="price-bar" *ngIf="enFlujoDeCompra">
+          <span class="price">${{ p.precio }}</span>
+
+          <div class="cantidad-control" *ngIf="cantidadEnCarrito(p) > 0">
+            <button class="btn-qty" (click)="quitarDelCarrito(p)">−</button>
+            <span class="qty">{{ cantidadEnCarrito(p) }}</span>
+            <button class="btn-qty" [disabled]="sinStockDisponible(p)" (click)="agregarAlCarrito(p)">+</button>
+          </div>
+          <button class="btn-add" *ngIf="cantidadEnCarrito(p) === 0" [disabled]="sinStockDisponible(p)" (click)="agregarAlCarrito(p)">
+            {{ sinStockDisponible(p) ? 'Sin stock' : '+ Agregar' }}
+          </button>
+        </div>
+        <div class="price-bar" *ngIf="!enFlujoDeCompra">
+          <span class="price">${{ p.precio }}</span>
+          <span class="solo-vista">Elegí tu función para poder comprar</span>
+        </div>
+        <p class="error-stock" *ngIf="errorStockPorProducto[p.id]">{{ errorStockPorProducto[p.id] }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Durante el flujo de compra (ya hay butacas elegidas) la confiteria es
+       un paso opcional: esta barra siempre esta visible, haya o no items en
+       el carrito, para poder avanzar con "Siguiente" sin elegir nada. -->
+  <div class="cart-floating" *ngIf="enFlujoDeCompra">
+    <div class="cart-summary">
+      <span *ngIf="carritoService.candy.length > 0">🛒 {{ carritoService.candy.length }} items seleccionados</span>
+      <span *ngIf="carritoService.candy.length === 0">Sin snacks — es opcional, podés continuar sin elegir nada.</span>
+      <strong *ngIf="carritoService.candy.length > 0">Total Candy: ${{ totalCarrito }}</strong>
+    </div>
+    <button class="btn-checkout" (click)="siguiente()">Siguiente →</button>
+  </div>
+
+  <!-- Catalogo suelto (navegado desde el navbar, sin compra en curso): no
+       hay nada que "continuar", así que solo mostramos el total si eligió algo. -->
+  <div class="cart-floating" *ngIf="!enFlujoDeCompra && carritoService.candy.length > 0">
+    <div class="cart-summary">
+      <span>🛒 {{ carritoService.candy.length }} items seleccionados</span>
+      <strong>Total Candy: ${{ totalCarrito }}</strong>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<div class="barra-navegando" [class.activa]="navegando"></div>
+
+<header class="navbar">
+  <div class="logo" routerLink="/cartelera">CINEMARK</div>
+  <nav>
+    <a routerLink="/cartelera" routerLinkActive="active">PELÍCULAS</a>
+    <a routerLink="/candy" routerLinkActive="active">CANDY / CONFITERÍA</a>
+
+    <ng-container *ngIf="authService.isLoggedIn(); else anonimo">
+      <a routerLink="/historial" routerLinkActive="active">MIS COMPRAS</a>
+
+      <!-- Antes eran hasta 6 links sueltos acá mismo -ver nota en
+           app.component.ts. Se muestra si puede ver CUALQUIERA de las
+           dos secciones (gestión de catálogo, solo ADMIN, o ventas,
+           ADMIN/EMPLEADO), y adentro cada link respeta su propio permiso. -->
+      <div class="menu-admin" *ngIf="authService.isAdmin() || authService.puedeGestionarVentas()">
+        <a class="menu-admin-trigger"
+           [class.active]="menuAdminAbierto"
+           (click)="toggleMenuAdmin($event)">
+          ADMIN <span class="caret" [class.arriba]="menuAdminAbierto">▾</span>
+        </a>
+        <div class="menu-admin-panel" *ngIf="menuAdminAbierto" (click)="$event.stopPropagation()">
+          <ng-container *ngIf="authService.isAdmin()">
+            <a routerLink="/admin/peliculas" routerLinkActive="active">Películas</a>
+            <a routerLink="/admin/confiteria" routerLinkActive="active">Confitería</a>
+            <a routerLink="/admin/salas" routerLinkActive="active">Salas</a>
+            <a routerLink="/admin/funciones" routerLinkActive="active">Funciones</a>
+            <a routerLink="/admin/usuarios" routerLinkActive="active">Usuarios</a>
+          </ng-container>
+          <a *ngIf="authService.puedeGestionarVentas()" routerLink="/admin/ventas" routerLinkActive="active">Ventas</a>
+        </div>
+      </div>
+
+      <span class="user-chip">👤 {{ authService.getNombreCompleto() }}</span>
+      <a (click)="cerrarSesion()" class="logout-link">Salir</a>
+    </ng-container>
+    <ng-template #anonimo>
+      <a routerLink="/login" routerLinkActive="active">INGRESAR</a>
+      <a routerLink="/registro" routerLinkActive="active" class="registro-link">REGISTRARME</a>
+    </ng-template>
+  </nav>
+</header>
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>

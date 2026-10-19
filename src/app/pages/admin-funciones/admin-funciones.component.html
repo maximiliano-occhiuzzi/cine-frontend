@@ -1,0 +1,74 @@
+<div class="admin-container">
+  <div class="admin-header">
+    <h2>Administrar Funciones</h2>
+    <button class="btn-primary" (click)="nuevaFuncion()">+ Nueva función</button>
+  </div>
+
+  <p class="mensaje" *ngIf="mensaje">{{ mensaje }}</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p *ngIf="cargando">Cargando...</p>
+
+  <div class="modal-backdrop" *ngIf="mostrarForm">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>{{ editandoId ? 'Editar función' : 'Nueva función' }}</h3>
+        <button class="btn-close" (click)="cancelar()">✕</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <label>Película</label>
+          <select [(ngModel)]="form.peliculaId" name="peliculaId">
+            <option [ngValue]="0" disabled>Elegir película...</option>
+            <option *ngFor="let p of peliculas" [ngValue]="p.id">{{ p.titulo }}</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label>Sala {{ editandoId ? '(no se puede cambiar)' : '' }}</label>
+          <select [(ngModel)]="form.salaId" name="salaId" [disabled]="!!editandoId">
+            <option [ngValue]="0" disabled>Elegir sala...</option>
+            <option *ngFor="let s of salas" [ngValue]="s.id">{{ s.nombre }} ({{ s.tipo }})</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Fecha y hora</label>
+          <input type="datetime-local" [(ngModel)]="form.fechaHora" name="fechaHora" />
+        </div>
+        <div class="field">
+          <label>Precio de la entrada</label>
+          <input type="number" min="0" step="0.01" [(ngModel)]="form.precioBase" name="precioBase" />
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="cancelar()">Cancelar</button>
+        <button class="btn-primary" (click)="guardar()">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <table class="admin-table" *ngIf="!cargando && funciones.length > 0">
+    <thead>
+      <tr>
+        <th>Película</th>
+        <th>Sala</th>
+        <th>Fecha y hora</th>
+        <th>Precio</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let f of funciones">
+        <td>{{ tituloPelicula(f.peliculaId) }}</td>
+        <td>{{ f.nombreSala }}</td>
+        <td>{{ f.fechaHora | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>${{ f.precioBase }}</td>
+        <td class="acciones">
+          <button class="btn-link" (click)="editar(f)">Editar</button>
+          <button class="btn-link danger" (click)="eliminar(f)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="!cargando && funciones.length === 0">Todavía no hay funciones cargadas.</p>
+</div>

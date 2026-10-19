@@ -1,0 +1,33 @@
+body {
+  margin: 0;
+  background-color: #121212;
+  color: #ffffff;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 40px;
+  background-color: #000000;
+  border-bottom: 1px solid #333;
+}
+.logo {
+  font-size: 24px;
+  font-weight: 900;
+  color: #e50914;
+  cursor: pointer;
+  letter-spacing: 2px;
+}
+nav a {
+  color: #ccc;
+  text-decoration: none;
+  margin-left: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+nav a:hover { color: #fff; }
+.main-content { padding: 20px; }
+.user-chip { color: #4caf50; font-weight: 600; font-size: 13px; margin-left: 20px; }
+.logout-link { cursor: pointer; }
+.registro-link { background: #e50914; color: #fff !important; padding: 8px 14px; border-radius: 20px; }

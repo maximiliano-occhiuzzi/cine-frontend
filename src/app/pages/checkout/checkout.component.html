@@ -1,0 +1,49 @@
+<div class="checkout-container" *ngIf="!venta">
+  <h2>Revisá tu compra</h2>
+
+  <div class="resumen-card" *ngIf="carritoService.funcion as funcion; else sinFuncion">
+    <p class="comprador">Comprado por <strong>{{ authService.getNombreCompleto() }}</strong></p>
+
+    <div class="linea">
+      <span>{{ funcion.peliculaTitulo }}</span>
+      <span>Sala {{ funcion.salaId }}</span>
+    </div>
+    <div class="linea">
+      <span>Butacas: {{ listaAsientosTexto }}</span>
+      <span>${{ carritoService.totalEntradas }}</span>
+    </div>
+
+    <div class="linea" *ngFor="let c of carritoService.candy">
+      <span>{{ c.nombre }} x{{ c.cantidad }}</span>
+      <span>${{ c.precio * c.cantidad }}</span>
+    </div>
+
+    <div class="linea total">
+      <span>Total</span>
+      <span>${{ carritoService.total }}</span>
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <button class="btn-primary" [disabled]="cargando" (click)="confirmarCompra()">
+      {{ cargando ? 'Confirmando...' : 'Confirmar y pagar' }}
+    </button>
+  </div>
+
+  <ng-template #sinFuncion>
+    <p>No tenés ninguna función seleccionada todavía.</p>
+    <a routerLink="/cartelera" class="btn-primary">Ver cartelera</a>
+  </ng-template>
+</div>
+
+<div class="checkout-container" *ngIf="venta">
+  <div class="resumen-card confirmada">
+    <div class="icon-ok">✅</div>
+    <h2>¡Compra confirmada!</h2>
+    <p class="numero-compra">Compra N° V-{{ venta.id }}</p>
+    <p>Butacas: {{ venta.butacas.length }}</p>
+    <p>Total: ${{ venta.total }}</p>
+    <p class="nota">Te mandamos el resumen de compra por mail.</p>
+    <a routerLink="/historial" class="btn-primary">Ver mis compras</a>
+  </div>
+</div>

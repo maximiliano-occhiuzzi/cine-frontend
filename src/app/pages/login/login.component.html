@@ -1,0 +1,31 @@
+<div class="entrando-overlay" *ngIf="entrando">
+  <div class="entrando-logo">CINEMARK</div>
+  <div class="entrando-spinner"></div>
+  <p>Entrando al cine...</p>
+</div>
+
+<div class="auth-container" *ngIf="!entrando">
+  <div class="auth-card">
+    <div class="logo-auth">CINEMARK</div>
+    <h2>Iniciar sesión</h2>
+
+    <div class="field">
+      <label>Usuario</label>
+      <input type="text" [(ngModel)]="username" name="username" placeholder="tu usuario" />
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" (keyup.enter)="ingresar()" />
+    </div>
+
+    <p class="error" *ngIf="error">{{ error }}</p>
+
+    <button class="btn-primary" [disabled]="cargando" (click)="ingresar()">
+      {{ cargando ? 'Ingresando...' : 'Ingresar' }}
+    </button>
+
+    <p class="switch-auth">
+      ¿No tenés cuenta? <a routerLink="/registro" [queryParams]="{ returnUrl: returnUrl }">Registrate gratis</a>
+    </p>
+  </div>
+</div>
