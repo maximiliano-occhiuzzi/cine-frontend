@@ -9,10 +9,12 @@ import {
   NuevoUsuarioRequest,
   RegistroRequest
 } from '../models/auth.models';
+import { gatewayUrl } from '../utils/gateway-url.util';
 
 /**
- * Habla con MS Auth a traves del Gateway (http://localhost:8081/auth/**,
- * que esta permitAll a nivel de Gateway y de Auth para login/registro).
+ * Habla con MS Auth a traves del Gateway (/auth/**, que esta permitAll a
+ * nivel de Gateway y de Auth para login/registro). La URL se arma con
+ * gatewayUrl() en vez de tener "localhost" fijo -ver ese archivo.
  *
  * POST /auth/registro-cliente: alta de autoservicio (siempre rol CLIENTE,
  * nombre+apellido obligatorios) — a diferencia de POST /auth/register, que
@@ -22,7 +24,7 @@ import {
   providedIn: 'root'
 })
 export class AuthService {
-  private apiUrl = 'http://localhost:8081/auth';
+  private apiUrl = gatewayUrl('/auth');
 
   private tokenKey = 'cine_token';
   private refreshKey = 'cine_refresh_token';

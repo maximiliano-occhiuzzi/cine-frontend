@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { VentaAltaDTO, VentaDTO } from '../models/venta.models';
+import { gatewayUrl } from '../utils/gateway-url.util';
 
 /**
  * Habla con MS Ventas a traves del Gateway. POST /ventas requiere estar
@@ -12,7 +13,7 @@ import { VentaAltaDTO, VentaDTO } from '../models/venta.models';
   providedIn: 'root'
 })
 export class VentasService {
-  private apiUrl = 'http://localhost:8081/ventas';
+  private apiUrl = gatewayUrl('/ventas');
 
   constructor(private http: HttpClient) {}
 

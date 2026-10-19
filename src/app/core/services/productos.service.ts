@@ -9,12 +9,13 @@ import {
   ConfiteriaFormDTO,
   TipoConfiteria
 } from '../models/cine.models';
+import { gatewayUrl } from '../utils/gateway-url.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductosService {
-  private apiUrl = 'http://localhost:8081/productos';
+  private apiUrl = gatewayUrl('/productos');
 
   // Mocks: solo se usan como fallback si el backend no responde (apagado,
   // red, demo sin levantar todo), para no dejar las pantallas vacias.

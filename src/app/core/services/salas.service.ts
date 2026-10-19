@@ -14,12 +14,13 @@ import {
   EstadoButaca,
   TipoSala
 } from '../models/cine.models';
+import { gatewayUrl } from '../utils/gateway-url.util';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SalasService {
-  private apiUrl = 'http://localhost:8081';
+  private apiUrl = gatewayUrl();
 
   private mockSalas: Sala[] = [
     { id: 1, nombre: 'Sala 1 - IMAX', capacidad: 120, tipo: TipoSala.IMAX },
