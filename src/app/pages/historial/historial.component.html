@@ -34,21 +34,25 @@
     <p class="desglose">Entradas: ${{ totalEntradas(venta) }}<span *ngIf="venta.productos?.length"> + Confitería: ${{ totalConfiteria(venta) }}</span></p>
     <p class="total">Total: ${{ venta.total }}</p>
 
+    <div class="aviso-pago esperando" *ngIf="esperandoConfirmacion(venta)">
+      <p>⏳ Esperando la confirmación del pago. Si ya pagaste, en unos segundos se actualiza solo.</p>
+    </div>
+
     <div class="aviso-pago" *ngIf="sinLinkDePago(venta)">
-      <p>⚠️ No se generó un link de pago real para esta compra (Mercado Pago no respondió). La reserva quedó creada en estado PENDIENTE.</p>
+      <p *ngIf="!venta.tienePreferenciaDePago">⚠️ No se generó un link de pago real para esta compra (Mercado Pago no respondió). La reserva quedó creada en estado PENDIENTE.</p>
+      <p *ngIf="venta.tienePreferenciaDePago">¿No llegaste a pagar o pasó demasiado tiempo? Generá un link nuevo para esta compra.</p>
       <button class="btn-reintentar" [disabled]="reintentando[venta.id]" (click)="reintentarPago(venta)">
         {{ reintentando[venta.id] ? 'Generando link...' : 'Reintentar pago' }}
       </button>
       <p class="error-reintento" *ngIf="errorReintento[venta.id]">{{ errorReintento[venta.id] }}</p>
     </div>
-    <!-- Ya hay un link de pago generado para esta compra: o todavia no se
-         pagó, o ya se pagó y estamos esperando que Mercado Pago confirme
-         por webhook (puede tardar unos segundos) -la pantalla se
-         actualiza sola, no hace falta hacer nada. -->
-    <div class="aviso-pago esperando" *ngIf="esperandoConfirmacion(venta)">
-      <p>⏳ Esperando la confirmación del pago. Si ya pagaste, en unos segundos se actualiza solo.</p>
+
+    <div class="acciones-compra" *ngIf="puedeCancelar(venta)">
+      <button class="btn-link danger" [disabled]="cancelando[venta.id]" (click)="cancelarVenta(venta)">
+        {{ cancelando[venta.id] ? 'Cancelando...' : 'Cancelar compra' }}
+      </button>
+      <p class="error-reintento" *ngIf="errorCancelar[venta.id]">{{ errorCancelar[venta.id] }}</p>
     </div>
-    <a *ngIf="venta.estado === 'PENDIENTE' && venta.initPoint" [href]="venta.initPoint" target="_blank" class="link-pago">Completar pago en Mercado Pago</a>
   </div>
 
   <a routerLink="/cartelera" class="btn-secondary">← Volver a cartelera</a>

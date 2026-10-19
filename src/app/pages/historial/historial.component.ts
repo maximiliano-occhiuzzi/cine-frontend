@@ -5,16 +5,8 @@ import { VentasService } from '../../core/services/ventas.service';
 import { ProductosService } from '../../core/services/productos.service';
 import { VentaDTO } from '../../core/models/venta.models';
 
-// Mercado Pago confirma el pago por un webhook APARTE que le pega a Ventas
-// por su cuenta -no es parte de la vuelta del navegador (back_urls)- y ese
-// webhook puede tardar unos segundos en llegar (más con ngrok de por
-// medio). Sin este polling, alguien que vuelve de pagar y mira "Mis
-// compras" al toque ve PENDIENTE de verdad (todavía no llegó el webhook) y
-// se queda así hasta que recarga la pantalla a mano. Reconsultando solo
-// unas pocas veces mientras haya compras pendientes con link ya generado,
-// la pantalla se pone al día sola apenas el webhook procesa.
 const POLL_INTERVALO_MS = 3000;
-const POLL_INTENTOS_MAXIMOS = 20; // ~60s: tiempo de sobra para un webhook normal, sin quedar sondeando para siempre si la compra quedo pendiente de verdad.
+const POLL_INTENTOS_MAXIMOS = 20;
 
 @Component({
   selector: 'app-historial',
@@ -27,24 +19,14 @@ export class HistorialComponent implements OnInit, OnDestroy {
   compras: VentaDTO[] = [];
   cargando = true;
   error = '';
-
-  // Viene del back_urls que arma Ventas al crear la preferencia de MP: el
-  // navegador del comprador vuelve solo (auto_return) a esta pantalla con
-  // ?pago=exitoso|fallido|pendiente en la URL.
   avisoPago: 'exitoso' | 'fallido' | 'pendiente' | null = null;
-
-  // VentaProductoDTO solo trae el productoId, no el nombre -> para mostrar
-  // "Pochoclo grande x2" en vez de "Producto #4 x2" resolvemos los nombres
-  // una sola vez contra el catalogo de confiteria.
   private nombresProductos: { [id: number]: string } = {};
 
-  // Antes, si Mercado Pago no generaba un link de pago real al comprar
-  // (ver sinLinkDePago), la venta quedaba PENDIENTE para siempre en esta
-  // pantalla: no habia forma de pagarla ni de volver a intentarlo, solo el
-  // mensaje de advertencia. reintentando/errorReintento son por venta, para
-  // poder tener varias tarjetas "PENDIENTE" en pantalla a la vez.
   reintentando: { [ventaId: number]: boolean } = {};
   errorReintento: { [ventaId: number]: string } = {};
+
+  cancelando: { [ventaId: number]: boolean } = {};
+  errorCancelar: { [ventaId: number]: string } = {};
 
   private pollHandle: ReturnType<typeof setInterval> | null = null;
   private intentosPoll = 0;
@@ -60,8 +42,6 @@ export class HistorialComponent implements OnInit, OnDestroy {
     const pago = this.route.snapshot.queryParamMap.get('pago');
     if (pago === 'exitoso' || pago === 'fallido' || pago === 'pendiente') {
       this.avisoPago = pago;
-      // Saca el ?pago=... de la URL sin recargar, asi si el usuario refresca
-      // la pantalla no le vuelve a mostrar el mismo aviso.
       this.router.navigate([], { relativeTo: this.route, queryParams: {} });
     }
 
@@ -69,7 +49,7 @@ export class HistorialComponent implements OnInit, OnDestroy {
       next: (productos) => {
         productos.forEach(p => this.nombresProductos[p.id] = p.nombre);
       },
-      error: () => {} // si falla, mostramos "Producto #id" como respaldo
+      error: () => {}
     });
 
     this.cargarCompras();
@@ -93,11 +73,6 @@ export class HistorialComponent implements OnInit, OnDestroy {
     });
   }
 
-  // Una compra "en vuelo" es PENDIENTE pero ya tiene un link de pago real
-  // (tienePreferenciaDePago): o el comprador todavia no termino de pagar, o
-  // ya pago y estamos esperando el webhook de Mercado Pago. En cualquiera
-  // de los dos casos, vale la pena reconsultar sola en vez de dejar que el
-  // usuario se quede mirando un estado que puede estar por cambiar.
   private hayCompraEnVuelo(): boolean {
     return this.compras.some(v => v.estado === 'PENDIENTE' && v.tienePreferenciaDePago);
   }
@@ -126,9 +101,6 @@ export class HistorialComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Compra PENDIENTE con link de pago ya generado: todavia no se sabe si
-  // el comprador la pago o no (ver nota de polling arriba) -distinto de
-  // sinLinkDePago(), donde Mercado Pago nunca llego a responder.
   esperandoConfirmacion(venta: VentaDTO): boolean {
     return venta.estado === 'PENDIENTE' && venta.tienePreferenciaDePago;
   }
@@ -149,14 +121,36 @@ export class HistorialComponent implements OnInit, OnDestroy {
     return venta.total - this.totalConfiteria(venta);
   }
 
-  // Si Mercado Pago NUNCA pudo generar una preferencia de pago para esta
-  // venta (ver nota de resiliencia en Ventas), se lo decimos y ofrecemos
-  // reintentar. Antes esto se decidia con "!venta.initPoint", pero initPoint
-  // solo viaja completo en la respuesta de comprar/reintentar-pago -en este
-  // listado SIEMPRE es null, haya o no un link activo- asi que terminaba
-  // mostrando este aviso hasta en compras que ya tenian un pago en camino.
   sinLinkDePago(venta: VentaDTO): boolean {
-    return venta.estado === 'PENDIENTE' && !venta.tienePreferenciaDePago;
+    return venta.estado === 'PENDIENTE';
+  }
+
+  puedeCancelar(venta: VentaDTO): boolean {
+    return venta.estado !== 'CANCELADA';
+  }
+
+  cancelarVenta(venta: VentaDTO): void {
+    const confirmado = window.confirm(
+      venta.estado === 'PAGADA'
+        ? `¿Cancelar la compra V-${venta.id}? Si corresponde, se va a iniciar el reembolso en Mercado Pago y se liberan las butacas.`
+        : `¿Cancelar la compra V-${venta.id}? Se liberan las butacas reservadas.`
+    );
+    if (!confirmado) return;
+
+    this.cancelando[venta.id] = true;
+    this.errorCancelar[venta.id] = '';
+
+    this.ventasService.cancelar(venta.id).subscribe({
+      next: (actualizada) => {
+        this.cancelando[venta.id] = false;
+        const idx = this.compras.findIndex(v => v.id === actualizada.id);
+        if (idx !== -1) this.compras[idx] = actualizada;
+      },
+      error: (err) => {
+        this.cancelando[venta.id] = false;
+        this.errorCancelar[venta.id] = err?.error?.message || 'No se pudo cancelar la compra.';
+      }
+    });
   }
 
   reintentarPago(venta: VentaDTO): void {
@@ -167,11 +161,8 @@ export class HistorialComponent implements OnInit, OnDestroy {
       next: (actualizada) => {
         this.reintentando[venta.id] = false;
         if (actualizada.initPoint) {
-          // Mismo flujo que al comprar: se manda al comprador a pagar.
           window.location.href = actualizada.initPoint;
         } else {
-          // Mercado Pago volvio a fallar; se lo decimos en vez de dejar
-          // el boton sin reaccionar.
           this.errorReintento[venta.id] = 'Mercado Pago no respondió de nuevo. Probá otra vez en un momento.';
         }
       },
